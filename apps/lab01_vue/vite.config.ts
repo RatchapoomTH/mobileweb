@@ -11,7 +11,7 @@ export default defineConfig({
     vue(),
     legacy()
   ],
-  base: "/mobileweb/",
+  base: "/mobileweb/lab01_vue/",
   build: {
     outDir: path.resolve(__dirname, '../../docs/lab01_vue'),
     emptyOutDir: true
