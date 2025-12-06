@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="th">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>KKU Campus Guide — แนะนำสถานที่ใน ม.ขอนแก่น</title>
+    <style>
+        /* Box model reset */
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Noto Sans", Arial, sans-serif;
+            line-height: 1.5;
+            background: linear-gradient(180deg,#f6f9ff,#ffffff);
+            color: #122;
+            -webkit-font-smoothing:antialiased;
+        }
+
+        header {
+            background: linear-gradient(90deg,#ab4747 0%, #a73b24 67%);
+            color: #fff;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        /* Canvas logo container */
+        .logo-wrap {
+            width: 120px;
+            height: 60px;
+            flex: 0 0 120px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.15rem;
+            letter-spacing: 0.4px;
+        }
+        header p.meta {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.95;
+        }
+
+        nav {
+            background: #fff;
+            padding: 10px 24px;
+            display:flex;
+            gap:12px;
+            align-items:center;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        nav a {
+            color: #004a8f;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+        nav a:hover { background: rgba(0,74,143,0.06); }
+
+        main {
+            padding: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        article.place {
+            background: #fff;
+            border-radius: 10px;
+            padding: 14px;
+            box-shadow: 0 6px 18px rgba(3,40,80,0.06);
+            border: 1px solid rgba(0,0,0,0.03);
+            overflow: hidden;
+        }
+        article.place h2 {
+            margin: 0 0 8px 0;
+            color: #003962;
+            font-size: 1.02rem;
+        }
+        article.place p.desc {
+            margin: 0 0 12px 0;
+            color: #234;
+            font-size: 0.96rem;
+        }
+
+        .photos {
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
+        }
+        figure {
+            margin:0;
+            flex:1 1 calc(50% - 8px);
+            background: #eef6ff;
+            border-radius:8px;
+            overflow:hidden;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        figure img {
+            display:block;
+            width:100%;
+            height:140px;
+            object-fit:cover;
+        }
+        figure figcaption {
+            padding:8px;
+            font-size:0.8rem;
+            color:#124;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent);
+        }
+
+        section.form-section {
+            margin-top: 22px;
+            background: #fff;
+            padding: 16px;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(3,40,80,0.04);
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        form .row {
+            display:flex;
+            gap:12px;
+            margin-bottom:12px;
+        }
+        form label {
+            display:block;
+            font-size:0.9rem;
+            margin-bottom:6px;
+            color:#224;
+        }
+        input[type="text"], input[type="email"], textarea {
+            width:100%;
+            padding:10px 12px;
+            border-radius:8px;
+            border:1px solid rgba(0,0,0,0.12);
+            background:#fbfdff;
+            font-size:0.95rem;
+            resize:vertical;
+        }
+        textarea { min-height:110px; }
+
+        .actions {
+            display:flex;
+            gap:10px;
+            align-items:center;
+        }
+        button {
+            background:#0077c2;
+            color:white;
+            border:0;
+            padding:10px 14px;
+            border-radius:8px;
+            cursor:pointer;
+            font-weight:600;
+        }
+        button.secondary {
+            background:#eef2f6;
+            color:#123;
+            border:1px solid rgba(0,0,0,0.06);
+        }
+
+        footer {
+            margin-top: 28px;
+            padding: 18px 24px;
+            text-align:center;
+            color:#345;
+            font-size:0.9rem;
+        }
+
+        .small {
+            font-size:0.85rem;
+            color:#456;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .grid { grid-template-columns: 1fr; }
+            header { flex-direction: column; align-items: flex-start; gap:10px; }
+            .logo-wrap { width: 160px; height: 72px; flex: none; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-wrap">
+            <canvas id="kkuLogo" width="320" height="140" style="width:100%;height:100%;display:block;"></canvas>
+        </div>
+        <div>
+            <h1>KKU Campus Guide — มหาวิทยาลัยขอนแก่น</h1>
+            <p class="meta">รหัสนักศึกษา: 663380231-4  |  ชื่อ-สกุล: นายรัชภูมิ ทองแดง</p>
+        </div>
+    </header>
+
+    <nav>
+        <a href="#places">สถานที่เด่น</a>
+        <a href="#add">แนะนำสถานที่</a>
+        <a href="#contact">ติดต่อ/ส่งข้อมูล</a>
+    </nav>
+
+    <main>
+        <section id="places" aria-labelledby="places-heading">
+            <h2 id="places-heading" style="margin-top:0;color:#062a4f;">สถานที่เด่นภายในมหาวิทยาลัยขอนแก่น</h2>
+
+            <div class="grid">
+                <!-- Place 1 -->
+                <article class="place">
+                    <h2>ศูนย์ประชุมอเนกประสงค์กาญจนาภิเษก มหาวิทยาลัยขอนแก่น</h2>
+                    <p class="desc">ศูนย์ประชุมอเนกประสงค์กาญจนาภิเษก มหาวิทยาลัยขอนแก่น เหมาะสำหรับการจัดประชุมสัมมนา การแสดงนิทรรศการ การจัดกิจกรรมพิเศษต่าง ๆ อาทิ การแสดงบนเวที งานจัดเลี้ยงและพิธีพระราชทานปริญญาบัตร"ศูนย์ประชุมอเนกประสงค์กาญจนาภิเษก" ตั้งอยู่บนเนื้อที่ประมาณ 60 ไร่ ภายใน บริเวณมหาวิทยาลัยขอนแก่นห่างจากบึงสีฐานไปทางทิศตะวันออก อาคารเป็นหอประชุมใหญ่ รูปทรงกูบเกวียนอีสาน (กูบหมายถึง ประทุนหลังช้าง) ลักษณะเป็นอาคาร 2 ชั้น มีพื้นที่ใช้สอย รวมทั้งสิ้น 21,160 ตารางเมดร</p>
+                    <div class="photos">
+                        <figure>
+                            <img src="image\Ho_kan.png" alt="หอกาญ ภาพ 1">
+                            <figcaption>ภาพภายนอกศูนย์ประชุมอเนกประสงค์กาญจนาภิเษก</figcaption>
+                        </figure>
+                        <figure>
+                            <img src="image\Inside_Ho_kan.png" alt="หอกาญ ภาพ 2">
+                            <figcaption>บรรยากาศภายในศูนย์ประชุมอเนกประสงค์กาญจนาภิเษก</figcaption>
+                        </figure>
+                    </div>
+                </article>
+
+                <!-- Place 2 -->
+                <article class="place">
+                    <h2>บึงสีฐาน</h2>
+                    <p class="desc">เป็นบึงน้ำจืดขนาดเล็ก ที่มีความยาวรอบบึงประมาณ 3 กิโลเมตร เป็นบึงที่อยู่ภายในมหาวิทยาลัยขอนแก่น ฝั่งประตูสีฐานติดกับถนนมะลิวัลย์  และอยู่ติดกับศูนย์ประชุมเอนกประสงค์กาญจนาภิเษก มหาวิทยาลัยขอนแก่นในทุกวันช่วงเย็น 17.00 น. เป็นต้นไป จะเห็นภาพ นักศึกษา, บุคลากรมหาวิทยาลัยขอนแก่นรวมถึงประชาชนในจังหวัดขอนแก่น มักจะเลือกสถานที่บึงศรีฐานเป็นที่ออกกำลังกายไม่ว่าจะเดินเพื่อสุขภาพ, วิ่ง, ปั่นจักรยาน และบางคนก็พาเพื่อน พาครอบครัวมานั่งกินลมชมวิวที่นี่  โดยบึงสีฐานก็แบ่งจุดทำกิจกรรมไว้ได้อย่างชัดเจน อย่างใครชอบวิ่ง , อยากเดินเพื่อสุขภาพหรือ อยากปั่นจักรยานก็ทำกิจกรรมรอบบึงได้โดยแบ่งช่องจราจรอย่างชัดเจน เลนวิ่ง ,เลนเดินเลนปั่นจักรยาน</p>
+                    <div class="photos">
+                        <figure>
+                            <img src="image\Srithan_1.png" alt="บึงสีฐาน ภาพ 1">
+                            <figcaption>บรรยากาศของบึงสีฐาน</figcaption>
+                        </figure>
+                        <figure>
+                            <img src="image\Srithan_2.png" alt="บึงสีฐาน ภาพ 2">
+                            <figcaption>ลานออกกำลังกายบริเวณบึงสีฐาน</figcaption>
+                        </figure>
+                    </div>
+                </article>
+
+                <!-- Place 3 -->
+                <article class="place">
+                    <h2>ศูนย์อาหารและบริการ 1 (คอมเพล็กซ์)</h2>
+                    <p class="desc">อาคารคอมเพล็กซ์ มข. หรือชื่อเต็ม ศูนย์อาหาร และบริการที่ 1 ก่อสร้างขึ้นในปี 2507 เป็นลักษณะของอาคารชั้นเดียว เดิมชื่อ "โรงกลาง" เพราะด้วยตำแหน่งที่ตั้งอาคารอยู่ในพื้นที่ศูนย์กลางของกลุ่ม Academic Cluster ของมหาวิทยาลัย รายล้อมไปด้วย คณะเรียน หอพัก สำนักงานต่าง ๆ โดยคอมเพล็กซ์นั้น ได้เป็นศูนย์รวมการใช้ชีวิตของบุคลากร และนักศึกษา มข. เนื่องจากเป็นพื้นที่น่าอยู่ และปลอดภัย</p>
+                    <div class="photos">
+                        <figure>
+                            <img src="image\Complex_out.png" alt="Complex ภาพ 1">
+                            <figcaption>ภาพภายนอก ศูนย์อาหารและบริการ 1 (คอมเพล็กซ์)</figcaption>
+                        </figure>
+                        <figure>
+                            <img src="image\Complex_in.png" alt="Complex ภาพ 2">
+                            <figcaption>บรรยากาศภายในศูนย์อาหารและบริการ 1 (คอมเพล็กซ์)</figcaption>
+                        </figure>
+                    </div>
+                </article>
+
+                <!-- Place 4 -->
+                <article class="place">
+                    <h2>สนามกีฬา 50 ปี มหาวิทยาลัยขอนแก่น</h2>
+                    <p class="desc">สนามกีฬา 50 ปี ถือเป็นสถานที่สำคัญที่เปิดให้บริการสำหรับกิจกรรมกีฬาต่างๆ ประกอบด้วยสนามฟุตบอล 1 สนามและมีลู่วิ่งล้อมรอบ เป็นสถานที่สำหรับนักศึกษา บุคลากรในมหาลัยวิทยาลัยขอนแก่น และบุคคลในชุมชนใกล้เคียง ที่นิยมมาออกกำลังกายตอนเย็นไม่ว่าจะเดิน ยืดเส้นยืดสายหรือวิ่งออกกำลังกายและยังเป็นสถานที่ฝึกซ้อมสำหรับนักกีฬามหาวิทยาลัยขอนแก่นอีกด้วย
+      นอกจากนั้นสนามกีฬากลาง50ปีฯยังเป็นสถานที่จัดกิจกรรมเชียร์กลาง ที่มีมาอย่างยาวนานเพื่อสร้างความสัมพันธ์อันดีและพิสูจน์ความเป็นอันหนึ่งอันเดียวกันของเหล่ากาลพฤกษ์ช่อใหม่ ที่เข้ามาในทุก ๆ ปีอีกด้วย</p>
+                    <div class="photos">
+                        <figure>
+                            <img src="image\50y_out.png" alt="สนามกีฬา 50 ปี ภาพ 1">
+                            <figcaption>ภาพภายนอกสนามกีฬา 50 ปี</figcaption>
+                        </figure>
+                        <figure>
+                            <img src="image\50y_in.png" alt="สนามกีฬา 50 ปี ภาพ 2">
+                            <figcaption>พื้นที่ฝึกซ้อมและสนามภายในสนามกีฬา 50 ปี</figcaption>
+                        </figure>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section id="add" class="form-section" aria-labelledby="form-heading">
+            <h2 id="form-heading">แบบฟอร์มแนะนำสถานที่</h2>
+            <p class="small">กรอกข้อมูลสถานที่ที่ต้องการแนะนำพร้อม URL ของภาพ ตัวอย่างจะส่งข้อมูลไปยัง Web3Forms</p>
+
+            <form id="placeForm" method="POST" action="https://api.web3forms.com/submit" >
+                <!-- เปลี่ยนค่า access_key เป็นของจริงจาก https://web3forms.com/ -->
+                <input type="hidden" name="access_key" value="65ace24b-2dd2-420e-8646-447ba31183cb" />
+                <div class="row">
+                    <div style="flex:1">
+                        <label for="placeName">ชื่อสถานที่ (ชื่อ)</label>
+                        <input id="placeName" name="place_name" type="text" required />
+                    </div>
+                    <div style="flex:1">
+                        <label for="senderEmail">อีเมลผู้ส่ง (เพื่อรับการตอบกลับ)</label>
+                        <input id="senderEmail" name="email" type="email" required placeholder="you@example.com" />
+                    </div>
+                </div>
+
+                <div style="margin-bottom:12px">
+                    <label for="details">รายละเอียด / คำอธิบาย</label>
+                    <textarea id="details" name="details" required></textarea>
+                </div>
+
+                <div style="margin-bottom:12px">
+                    <label for="images">URL ของรูปภาพ (ใส่ 1 URL ต่อบรรทัด อย่างน้อย 2 รูป)</label>
+                    <textarea id="images" name="image_urls" placeholder="https://example.com/photo1.jpg\nhttps://example.com/photo2.jpg" required></textarea>
+                </div>
+
+                <div class="actions">
+                    <button type="submit">ส่งข้อมูล</button>
+                    <button type="button" class="secondary" id="clearBtn">ล้างแบบฟอร์ม</button>
+                    <div id="formStatus" class="small" style="margin-left:10px;color:#114;"></div>
+                </div>
+            </form>
+        </section>
+
+        <footer id="contact">
+            <p>KKU Campus Guide — เว็บไซต์แนะนำสถานที่ภายในมหาวิทยาลัยขอนแก่น</p>
+            <p class="small">ผลงานเล็ก ๆ น้อย ๆ จาก 663380231-4 รัชภูมิ ทองแดง </code></p>
+        </footer>
+    </main>
+
+    <script>
+        // Canvas logo animation
+        (function(){
+            const canvas = document.getElementById('kkuLogo');
+            const ctx = canvas.getContext('2d');
+            const DPR = window.devicePixelRatio || 1;
+            const W = canvas.width;
+            const H = canvas.height;
+            canvas.style.background = 'transparent';
+            let t = 0;
+
+            function render() {
+                t += 0.02;
+                ctx.clearRect(0,0,W,H);
+
+                // background soft rounded rectangle
+                ctx.save();
+                ctx.fillStyle = 'rgba(255,255,255,0.06)';
+                roundRect(ctx, 6,10, W-12, H-20, 12);
+                ctx.fill();
+                ctx.restore();
+
+                // animated orbits
+                const cx = W/2, cy = H/2 + 6;
+                for (let i=0;i<3;i++){
+                    const r = 18 + i*12;
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(255,255,255,${0.12 + i*0.06})`;
+                    ctx.lineWidth = 1 + i*0.8;
+                    ctx.setLineDash([6, (i+1)*6]);
+                    ctx.arc(cx, cy, r, 0, Math.PI*2);
+                    ctx.stroke();
+                }
+                ctx.setLineDash([]);
+
+                // particles along orbit
+                for (let i=0;i<6;i++){
+                    const angle = t*0.9 + i*(Math.PI*2/6);
+                    const r = 18 + (i%3)*12;
+                    const x = cx + Math.cos(angle * (1 + (i%2)*0.2)) * r;
+                    const y = cy + Math.sin(angle * (1 + (i%2)*0.2)) * r;
+                    ctx.beginPath();
+                    ctx.fillStyle = i%2 ? '#ffd34d' : '#69d0ff';
+                    ctx.arc(x,y,3.6,0,Math.PI*2);
+                    ctx.fill();
+                }
+
+                // big text KKU
+                ctx.save();
+                ctx.translate(cx, cy+2);
+                const wob = Math.sin(t*1.6)*3;
+                ctx.font = '700 34px sans-serif';
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('KKU', wob, 0);
+                ctx.restore();
+
+                // small tagline
+                ctx.font = '600 10px sans-serif';
+                ctx.fillStyle = 'rgba(255,255,255,0.9)';
+                ctx.fillText('', cx, H - 12);
+
+                requestAnimationFrame(render);
+            }
+
+            function roundRect(ctx,x,y,w,h,r){
+                ctx.beginPath();
+                ctx.moveTo(x+r,y);
+                ctx.arcTo(x+w,y,x+w,y+h,r);
+                ctx.arcTo(x+w,y+h,x,y+h,r);
+                ctx.arcTo(x,y+h,x,y,r);
+                ctx.arcTo(x,y,x+w,y,r);
+                ctx.closePath();
+            }
+
+            render();
+        })();
+
+        // Form handling: POST to Web3Forms API endpoint.
+        (function(){
+            const form = document.getElementById('placeForm');
+            const status = document.getElementById('formStatus');
+            const clearBtn = document.getElementById('clearBtn');
+
+            form.addEventListener('submit', async function(e){
+                e.preventDefault();
+                status.textContent = 'กำลังส่ง...';
+                const url = form.action;
+                const data = new FormData(form);
+
+                // Prepare image array in case multiple lines: send as single field or as CSV
+                const rawImgs = (data.get('image_urls') || '').toString().trim();
+                data.set('image_urls', rawImgs);
+
+                try {
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        body: data
+                    });
+                    const json = await res.json();
+                    if (res.ok) {
+                        status.style.color = '#0a6';
+                        status.textContent = 'ส่งสำเร็จ ขอบคุณสำหรับการแนะนำ!';
+                        form.reset();
+                    } else {
+                        status.style.color = '#c33';
+                        status.textContent = 'เกิดข้อผิดพลาด: ' + (json.message || res.statusText);
+                    }
+                } catch (err) {
+                    status.style.color = '#c33';
+                    status.textContent = 'ไม่สามารถส่งได้: ตรวจสอบการเชื่อมต่อหรือ access_key';
+                }
+            });
+
+            clearBtn.addEventListener('click', function(){
+                form.reset();
+                status.textContent = '';
+            });
+        })();
+    </script>
+</body>
+</html></footer></div></section>
