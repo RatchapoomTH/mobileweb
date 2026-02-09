@@ -7,4 +7,4 @@ import { FirebaseAppAuthService } from "./auth-app";
 export const authService: IAuthService =
   Capacitor.isNativePlatform()
     ? new FirebaseAppAuthService()      // Android / iOS
-    : new FirebaseWebAuthService();     // Web
+    : new FirebaseWebAuthService();     // WebPP
