@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "945912545642",
+    "project_id": "mobileweb-f3802",
+    "storage_bucket": "mobileweb-f3802.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:945912545642:android:612ea46ba3a5dc6e3fa513",
+        "android_client_info": {
+          "package_name": "cpkku.ratcha.lab07"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "945912545642-d24hnf6piodtufssiod4s2mfl4hjo5s7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnjmxRGaZ6YxtHhxQhB_wK6KOjRLLkD6I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "945912545642-d24hnf6piodtufssiod4s2mfl4hjo5s7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
