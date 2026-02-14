@@ -1,66 +1,48 @@
 import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
-import type { IAuthService } from "./auth-interface";
-import type { AuthUser, EmailPasswordCredentials, PhoneCredentials } from "./auth-interface";
-
+import { AuthUser, IAuthService, EmailPasswordCredentials, PhoneCredentials } from "./auth-interface";
 
 function mapUser(u: any): AuthUser {
   return {
     uid: u.uid,
     email: u.email ?? null,
-    phoneNumber: u.phoneNumber ?? null,
     displayName: u.displayName ?? null,
     photoUrl: u.photoUrl ?? null,
+    phoneNumber: u.phoneNumber ?? null,
   };
 }
 
-
 export class FirebaseAppAuthService implements IAuthService {
-  async getCurrentUser(): Promise<AuthUser | null> {
+  async getCurrentUser() {
     const { user } = await FirebaseAuthentication.getCurrentUser();
     return user ? mapUser(user) : null;
   }
 
-
-  async loginWithEmailPassword(creds: EmailPasswordCredentials): Promise<AuthUser> {
+  async loginWithEmailPassword(creds: EmailPasswordCredentials) {
     const { user } = await FirebaseAuthentication.signInWithEmailAndPassword(creds);
     return mapUser(user);
   }
 
-
-  async loginWithGoogle(): Promise<AuthUser> {
+  async loginWithGoogle() {
     const { user } = await FirebaseAuthentication.signInWithGoogle();
     return mapUser(user);
   }
 
-
   async startPhoneLogin(creds: PhoneCredentials): Promise<{ verificationId: string }> {
     return new Promise(async (resolve, reject) => {
-      const offFailed = await FirebaseAuthentication.addListener("phoneVerificationFailed", (e) => {
-        reject(new Error(e.message ?? "Phone verification failed"));
-      });
-
-
-      const offSent = await FirebaseAuthentication.addListener("phoneCodeSent", (e) => {
-        offFailed.remove();
-        offSent.remove();
-        resolve({ verificationId: e.verificationId });
-      });
-
-
-      await FirebaseAuthentication.signInWithPhoneNumber({
-        phoneNumber: creds.phoneNumberE164,
-      });
+      await FirebaseAuthentication.addListener("phoneCodeSent", (e) => resolve({ verificationId: e.verificationId }));
+      await FirebaseAuthentication.addListener("phoneVerificationFailed", (e) => reject(new Error(e.message)));
+      await FirebaseAuthentication.signInWithPhoneNumber({ phoneNumber: creds.phoneNumberE164 });
     });
   }
 
-
-  async confirmPhoneCode(payload: { verificationId: string; verificationCode: string }): Promise<AuthUser> {
+  async confirmPhoneCode(payload: any) {
     const { user } = await FirebaseAuthentication.confirmVerificationCode(payload);
     return mapUser(user);
   }
 
-
-  async logout(): Promise<void> {
-    await FirebaseAuthentication.signOut();
+  async updateProfile(data: any) {
+    await FirebaseAuthentication.updateProfile({ displayName: data.displayName, photoUrl: data.photoUrl });
   }
+
+  async logout() { await FirebaseAuthentication.signOut(); }
 }

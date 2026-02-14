@@ -6,24 +6,22 @@ export interface AuthUser {
   photoUrl?: string | null;
 }
 
-
 export interface EmailPasswordCredentials {
   email: string;
   password: string;
 }
 
-
 export interface PhoneCredentials {
-  phoneNumberE164: string; // เช่น +66812345678
+  phoneNumberE164: string; 
 }
 
-
-export type AuthProvider = "email" | "phone" | "google";
-
-
 export interface IAuthService {
-  loginWithEmail(email: string, password: string): Promise<void>;
-  loginWithGoogle(): Promise<void>;
-  loginWithPhone(): Promise<void>;
-  getCurrentUser(): Promise<any | null>;
+  getCurrentUser(): Promise<AuthUser | null>;
+  loginWithEmailPassword(creds: EmailPasswordCredentials): Promise<AuthUser>;
+  loginWithGoogle(): Promise<AuthUser>;
+  startPhoneLogin(creds: PhoneCredentials): Promise<{ verificationId: string }>;
+  confirmPhoneCode(payload: { verificationId: string; verificationCode: string }): Promise<AuthUser>;
+  logout(): Promise<void>;
+  // เพิ่มสำหรับการอัปเดตชื่อโปรไฟล์
+  updateProfile(data: { displayName?: string; photoUrl?: string }): Promise<void>;
 }

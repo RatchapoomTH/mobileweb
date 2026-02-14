@@ -1,28 +1,21 @@
-// นำมาจากหน้าโครงการ firebase
+import { initializeApp } from "firebase/app";
+import { 
+  getAuth, signInWithEmailAndPassword, GoogleAuthProvider, 
+  signInWithPopup, signInWithPhoneNumber, RecaptchaVerifier, 
+  updateProfile, ConfirmationResult 
+} from "firebase/auth";
+import { AuthUser, IAuthService, EmailPasswordCredentials, PhoneCredentials } from "./auth-interface";
+
 const firebaseConfig = {
+  // *** ใส่ค่า Config ของคุณตรงนี้ ***
   apiKey: "AIzaSyARogb6S407cole8hfdn6Zwx5lEXts3P80",
   authDomain: "mobileweb-f3802.firebaseapp.com",
   projectId: "mobileweb-f3802",
-  storageBucket: "mobileweb-f3802.firebasestorage.app",
-  messagingSenderId: "945912545642",
-  appId: "1:945912545642:web:405a382fb2296d083fa513",
-  measurementId: "G-38FTF1ML94"
+  appId: "1:945912545642:web:405a382fb2296d083fa513"
 };
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { AuthUser, IAuthService, EmailPasswordCredentials,PhoneCredentials } from "./auth-interface";
-import {
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signInWithPhoneNumber,
-  ConfirmationResult,
-} from "firebase/auth";
-
 
 export const firebaseApp = initializeApp(firebaseConfig);
 export const firebaseAuth = getAuth(firebaseApp);
-
 
 function mapUser(u: any): AuthUser {
   return {
@@ -30,90 +23,66 @@ function mapUser(u: any): AuthUser {
     email: u.email,
     displayName: u.displayName,
     photoUrl: u.photoURL,
+    phoneNumber: u.phoneNumber, // บรรทัดนี้สำคัญสำหรับโชว์เบอร์โทร
   };
 }
 
-
-import { RecaptchaVerifier } from "firebase/auth";
-import { code } from "ionicons/icons";
-
-
+// ตัวแปรสำหรับเก็บ Verifier และ Result
 let verifier: RecaptchaVerifier | null = null;
 let confirmationResult: ConfirmationResult | null = null;
 
-
-// ควรมี div สำหรับ reCAPTCHA ในหน้า login สำหรับโทรศัพท์ ด้วย id="recaptcha-container"
-const recaptchaContainerId: string = "recaptcha-container";
-
-
-export function getRecaptchaVerifier(
-  containerId: string
-): RecaptchaVerifier {
-  if (!verifier) {
-    verifier = new RecaptchaVerifier(
-      firebaseAuth,
-      containerId,
-      {
-        size: "invisible", // หรือ "normal"
-      }
-    );
-  }
-  return verifier;
-}
-
-
 export class FirebaseWebAuthService implements IAuthService {
-  loginWithPhone(): Promise<void> {
-      throw new Error("Method not implemented.");
-  }
-  async loginWithEmail(email: string, password: string): Promise<void> {
-    const r = await signInWithEmailAndPassword(
-      firebaseAuth,
-      email,
-      password
-    );
-    mapUser(r.user);
+  async getCurrentUser() {
+    return firebaseAuth.currentUser ? mapUser(firebaseAuth.currentUser) : null;
   }
 
-
-  async loginWithGoogle(): Promise<void> {
-    const provider = new GoogleAuthProvider();
-    const r = await signInWithPopup(firebaseAuth, provider);
-    mapUser(r.user);
+  async loginWithEmailPassword(creds: EmailPasswordCredentials) {
+    const r = await signInWithEmailAndPassword(firebaseAuth, creds.email, creds.password);
+    return mapUser(r.user);
   }
 
-
-  async logout() {
-    await firebaseAuth.signOut();
+  async loginWithGoogle() {
+    const r = await signInWithPopup(firebaseAuth, new GoogleAuthProvider());
+    return mapUser(r.user);
   }
 
+  async startPhoneLogin(creds: PhoneCredentials) {
+    // 1. เคลียร์ Verifier เก่าทิ้งก่อน (ถ้ามี) เพื่อป้องกัน Error "RecaptchaVerifier is already initialized"
+    try {
+      if (verifier) {
+        verifier.clear();
+      }
+    } catch (e) {
+      console.warn("Clear verifier error", e);
+    }
 
-  async startPhoneLogin(
-    creds: PhoneCredentials
-  ): Promise<{ verificationId: string }> {
-    const verifier = getRecaptchaVerifier(recaptchaContainerId);
-    confirmationResult = await signInWithPhoneNumber(
-      firebaseAuth,
-      creds.phoneNumberE164,
-      verifier
-    );
+    // 2. สร้าง Verifier ใหม่แบบ "normal" (แสดงให้เห็นชัดเจน)
+    verifier = new RecaptchaVerifier(firebaseAuth, "recaptcha-container", {
+      size: "normal", // <--- แก้ตรงนี้ให้ Captcha แสดงออกมา
+    });
+
+    // 3. ส่ง SMS
+    confirmationResult = await signInWithPhoneNumber(firebaseAuth, creds.phoneNumberE164, verifier);
+    
     return { verificationId: confirmationResult.verificationId };
   }
 
-
-  async confirmPhoneCode(payload: { verificationId: string; verificationCode: string }): Promise<AuthUser> {
+  async confirmPhoneCode(payload: any) {
     if (!confirmationResult) {
-      throw new Error("No confirmation result");
+      throw new Error("No confirmation result found. Please request OTP first.");
     }
     const r = await confirmationResult.confirm(payload.verificationCode);
     return mapUser(r.user);
   }
 
-
-  async getCurrentUser() {
-    return firebaseAuth.currentUser
-      ? mapUser(firebaseAuth.currentUser)
-      : null;
+  async updateProfile(data: any) {
+    if (firebaseAuth.currentUser) {
+      await updateProfile(firebaseAuth.currentUser, { 
+        displayName: data.displayName, 
+        photoURL: data.photoUrl 
+      });
+    }
   }
 
+  async logout() { await firebaseAuth.signOut(); }
 }

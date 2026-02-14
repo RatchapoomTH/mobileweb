@@ -8,9 +8,11 @@
 
     <ion-content class="ion-padding">
       <div v-if="user">
-        <ion-avatar v-if="user.photoUrl" style="width:80px;height:80px">
-          <img :src="user.photoUrl" />
-        </ion-avatar>
+        <div class="ion-text-center ion-margin-bottom" v-if="user.photoUrl">
+          <ion-avatar style="width:100px; height:100px; margin: 0 auto;">
+            <img :src="user.photoUrl" alt="Profile" />
+          </ion-avatar>
+        </div>
 
         <ion-list>
           <ion-item>
@@ -41,10 +43,20 @@
             </ion-label>
           </ion-item>
         </ion-list>
+
+        <ion-button 
+          expand="block" 
+          color="danger" 
+          class="ion-margin-top" 
+          @click="handleLogout"
+        >
+          Log out
+        </ion-button>
       </div>
 
-      <div v-else>
-        <p>Not logged in.</p>
+      <div v-else class="ion-text-center ion-padding">
+        <p>กำลังโหลดข้อมูล หรือ ยังไม่ได้เข้าสู่ระบบ...</p>
+        <ion-button router-link="/login">ไปหน้า Login</ion-button>
       </div>
     </ion-content>
   </ion-page>
@@ -52,8 +64,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router'; // 1. import router
 import { authService } from '@/auth/auth-service';
+import { 
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, 
+  IonList, IonItem, IonLabel, IonAvatar, IonButton 
+} from '@ionic/vue'; // 2. import components ให้ครบ
 
+// Interface
 interface AuthUser {
   uid: string;
   email?: string | null;
@@ -62,7 +80,24 @@ interface AuthUser {
   photoUrl?: string | null;
 }
 
+const router = useRouter();
 const user = ref<AuthUser | null>(null);
+
+// ฟังก์ชัน Logout
+async function handleLogout() {
+  try {
+    // 1. สั่ง Logout จาก Firebase
+    await authService.logout();
+    
+    // 2. เคลียร์ค่า user ในหน้านี้ (เพื่อความสวยงามก่อนเปลี่ยนหน้า)
+    user.value = null;
+
+    // 3. เปลี่ยนหน้าไป Login (ใช้ replace เพื่อไม่ให้กด Back กลับมาได้)
+    router.replace('/login');
+  } catch (error) {
+    console.error("Logout failed", error);
+  }
+}
 
 onMounted(async () => {
   try {
@@ -77,6 +112,8 @@ onMounted(async () => {
       };
     } else {
       user.value = null;
+      // ถ้าไม่มี user ให้ดีดกลับไปหน้า login อัตโนมัติ (Optional)
+      router.replace('/login');
     }
   } catch {
     user.value = null;
