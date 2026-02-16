@@ -8,7 +8,7 @@ export const ai = getAI(app, { backend: new GoogleAIBackend() });
 
 
 export const visionModel = getGenerativeModel(ai, {
-  model: "gemini-2.5-flash",
+  model: "gemini-2.5-flash-lite",
   generationConfig: {
     responseMimeType: "application/json",
     responseSchema: imageAnalysisSchema,
@@ -22,7 +22,7 @@ export class GeminiVisionService {
       `วิเคราะห์ภาพนี้และตอบกลับตาม JSON schema เท่านั้น\n` +
       `- caption: คำบรรยายสั้น 1 ประโยคภาษาไทย\n` +
       `- tags: คีย์เวิร์ด 3-8 คำ\n` +
-      `- objects: ถ้าเห็นวัตถุเด่น ให้ระบุชื่อ\n` +
+      `- objects: ระบุชื่อวัตถุ (name) และประเมินค่าความมั่นใจ (confidence 0.1-1.0) มาด้วยเสมอ\n` +
       `- safety: ถ้าเป็นภาพอ่อนไหวให้ทำเครื่องหมาย`;
 
 
