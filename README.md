@@ -10,9 +10,3 @@ Github respository นี้ถูกสร้างขึ้นเพื่อ�
 * รหัสนักศึกษา: 663380231-4
 * Github: RatchapoomTH
 * Email: ratchapoom.th@kkumail.com
-
----
-## โครงสร้าง Repository
-
-???
-
