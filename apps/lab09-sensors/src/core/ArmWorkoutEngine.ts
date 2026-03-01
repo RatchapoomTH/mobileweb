@@ -1,22 +1,20 @@
 import type { AccelSample, WorkoutState } from "./types";
+import { TtsService } from "./TtsService";
+import { HapticsService } from "./HapticsService";
 
 export class ArmWorkoutEngine {
   private listeners = new Set<(s: WorkoutState) => void>();
-  private lastUpTime = 0;
   private lastRepTime = 0;
-  private peak = 0;
-  private valley = 0;
-  private phase: "WAIT_UP" | "WAIT_DOWN" = "WAIT_UP";
+  private phase: "WAIT_START" | "WAIT_UP" = "WAIT_START";
+
+  private tts = new TtsService();
+  private haptics = new HapticsService();
 
   state: WorkoutState = {
     status: "IDLE",
     repDisplay: 0,
     stats: {
-      repsTotal: 0,
-      repsOk: 0,
-      repsBad: 0,
-      score: 0,
-      avgRepMs: 0,
+      repsTotal: 0, repsOk: 0, repsBad: 0, score: 0, avgRepMs: 0,
     },
   };
 
@@ -26,98 +24,65 @@ export class ArmWorkoutEngine {
     return () => this.listeners.delete(cb);
   }
 
-  private emit() {
-    const snap = this.clone();
-    this.listeners.forEach((cb) => cb(snap));
-  }
+  private emit() { this.listeners.forEach((cb) => cb(this.clone())); }
+  private clone(): WorkoutState { return JSON.parse(JSON.stringify(this.state)); }
 
-  private clone(): WorkoutState {
-    return JSON.parse(JSON.stringify(this.state));
-  }
-
-  start() {
-    this.state = {
-      status: "RUNNING",
-      repDisplay: 0,
-      stats: {
-        repsTotal: 0,
-        repsOk: 0,
-        repsBad: 0,
-        score: 0,
-        avgRepMs: 0,
-      },
-    };
-    this.phase = "WAIT_UP";
+  async start() {
+    this.state.status = "RUNNING";
+    this.state.repDisplay = 0;
+    this.state.stats = { repsTotal: 0, repsOk: 0, repsBad: 0, score: 0, avgRepMs: 0 };
+    this.phase = "WAIT_START";
+    this.lastRepTime = Date.now();
     this.emit();
+    await this.tts.speak("ถือโทรศัพท์แนวนอน หันหัวไปด้านหน้า แล้วค่อยๆ พลิกขึ้นชี้ฟ้า");
   }
 
   stop() {
     this.state.status = "STOPPED";
+    this.tts.speak("หยุดการทำงาน");
     this.emit();
   }
 
-  process(sample: AccelSample) {
-    if (this.state.status !== "RUNNING") return;
+  async process(sample: AccelSample) {
+  if (this.state.status !== "RUNNING") return;
 
-    const y = sample.ay;
-    const side = Math.abs(sample.ax) + Math.abs(sample.az);
+  const y = sample.ay; // แกนชี้ฟ้า (แนวตั้ง)
+  const z = sample.az; // แกนชี้หน้า (แนวนอน)
 
-    const UP_TH = 2.0;
-    const DOWN_TH = -1.5;
-    const MIN_ROM = 3.0;
-    const MIN_MS = 700;
-    const MAX_MS = 3500;
+  const START_Z_TH = 8.5
+  const END_Y_TH = 8.5;
+  const MIN_MS = 800;
 
-    if (this.phase === "WAIT_UP") {
-      this.peak = Math.max(this.peak, y);
-      if (y > UP_TH) {
-        this.phase = "WAIT_DOWN";
-        this.lastUpTime = sample.t;
-      }
-    } else {
-      this.valley = Math.min(this.valley, y);
+  if (this.phase === "WAIT_START") {
+    // จังหวะเตรียม: โทรศัพท์ต้องขนานพื้น หันหัวไปข้างหน้า (Z เด่น)
+    if (z > START_Z_TH) {
+      this.phase = "WAIT_UP"; // ล็อคเป้าหมายถัดไปคือต้องยกขึ้น
+      this.state.stats.lastMessage = "ยกขึ้นได้เลย...";
+      this.emit();
+    }
+  } else if (this.phase === "WAIT_UP") {
+    // จังหวะยก: โทรศัพท์ต้องพลิกจนตั้งฉาก (Y เด่น)
+    if (y > END_Y_TH) {
+      const now = Date.now();
+      const repMs = now - this.lastRepTime;
 
-      if (y < DOWN_TH) {
-        const repMs = sample.t - this.lastRepTime;
-        this.lastRepTime = sample.t;
-        this.state.stats.repsTotal++;
-
-        const rom = this.peak - this.valley;
-
-        let ok = true;
-        let msg = "OK";
-
-        if (rom < MIN_ROM) {
-          ok = false;
-          msg = "ยกแขนต่ำเกินไป";
-        } else if (repMs < MIN_MS) {
-          ok = false;
-          msg = "เร็วเกินไป";
-        } else if (repMs > MAX_MS) {
-          ok = false;
-          msg = "ช้าเกินไป";
-        } else if (side > 5) {
-          ok = false;
-          msg = "กรุณายกแนวตั้ง";
-        }
-
-        if (ok) {
-          this.state.repDisplay++;
-          this.state.stats.repsOk++;
-          this.state.stats.score++;
-          this.state.stats.avgRepMs =
-            Math.round((this.state.stats.avgRepMs + repMs) / 2);
-        } else {
-          this.state.stats.repsBad++;
-        }
-
-        this.state.stats.lastMessage = msg;
-        this.phase = "WAIT_UP";
-        this.peak = 0;
-        this.valley = 0;
+      // เช็คว่าไม่ใช่การสั่น
+      if (repMs > MIN_MS) {
+        // นับสำเร็จ!
+        this.state.repDisplay++;
+        this.state.stats.repsOk++;
+        this.state.stats.score++;
+        this.state.stats.lastMessage = "เยี่ยม!";
+        this.state.stats.avgRepMs = Math.round((this.state.stats.avgRepMs + repMs) / 2);
+        
+        this.lastRepTime = now;
+        this.phase = "WAIT_START"; // บังคับให้ต้องกลับไปท่าเริ่มต้น (Z) ก่อนถึงจะนับใหม่ได้
+        
+        await this.haptics.success();
+        await this.tts.speak(`${this.state.repDisplay}`);
         this.emit();
       }
     }
   }
+  }
 }
-

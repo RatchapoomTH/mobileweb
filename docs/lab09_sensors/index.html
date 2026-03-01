@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOWNLOAD | Ionic + Firebase (Gemini AI)</title>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    
+    <style>
+        /* --- Cyberpunk Variables (Synced with Portfolio) --- */
+        :root {
+            --bg-dark: #050110;
+            --card-bg: rgba(26, 8, 61, 0.8);
+            --primary: #00d2ff;
+            --secondary: #ef57ff;
+            --border: #6c5ce7;
+            --text-main: #f1f2f6;
+            --text-dim: #a29bfe;
+            --grid-color: rgba(108, 92, 231, 0.1);
+        }
+
+        /* --- Light Theme --- */
+        body.light-theme {
+            --bg-dark: #f0f3f8;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --primary: #0984e3;
+            --secondary: #d63031;
+            --border: #b2bec3;
+            --text-main: #2d3436;
+            --text-dim: #636e72;
+            --grid-color: rgba(0, 0, 0, 0.05);
+        }
+
+        /* --- Global Styles --- */
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--text-main);
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            transition: all 0.4s ease;
+        }
+
+        /* --- Theme Toggle --- */
+        .theme-switch {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: var(--card-bg);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        /* --- Main Container --- */
+        .cyber-container {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px var(--grid-color);
+            text-align: center;
+            max-width: 350px;
+            width: 90%;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cyber-container::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .student-id {
+            color: var(--secondary);
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        /* --- Image Preview --- */
+        .preview-box {
+            position: relative;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+            padding: 5px;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .app-screenshot {
+            width: 100%;
+            display: block;
+            border-radius: 4px;
+            filter: grayscale(20%);
+            transition: 0.3s;
+        }
+
+        .preview-box:hover .app-screenshot {
+            filter: grayscale(0%);
+        }
+
+        /* Scanline effect */
+        .scanline {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: var(--primary);
+            opacity: 0.3;
+            box-shadow: 0 0 10px var(--primary);
+            animation: moveScan 3s linear infinite;
+        }
+
+        @keyframes moveScan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        /* --- Download Button --- */
+        .download-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 12px 20px;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .download-btn:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 10px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        /* Decor Corners */
+        .corner {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border: 2px solid var(--secondary);
+        }
+        .top-l { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
+        .bottom-r { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
+
+    </style>
+</head>
+<body id="mainBody">
+
+    <div class="theme-switch" id="toggleBtn">
+        <ion-icon name="moon" id="themeIcon"></ion-icon>
+    </div>
+
+    <div class="cyber-container">
+        <div class="corner top-l"></div>
+        <div class="corner bottom-r"></div>
+
+        <h1>Ionic + Mobile Phone Sensors</h1>
+        <div class="student-id">BY 663380231-4 RATCHAPOOM THONGDAENG</div>
+        
+        <div class="preview-box">
+            <div class="scanline"></div>
+            <img src="lab09_preview.jpg" alt="Preview" class="app-screenshot">
+        </div>
+
+        <a href="applab9_new5-debug.apk" class="download-btn" download>
+            <ion-icon name="download-outline" style="font-size: 1.4rem;"></ion-icon>
+            Download
+        </a>
+
+        <div class="footer">
+            SYSTEM STATUS: READY TO INSTALL<br>
+            TARGET_OS: ANDROID
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('toggleBtn');
+        const themeIcon = document.getElementById('themeIcon');
+        const body = document.getElementById('mainBody');
+
+        // Check local storage
+        if (localStorage.getItem('theme') === 'light') {
+            body.classList.add('light-theme');
+            themeIcon.setAttribute('name', 'sunny');
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            body.classList.toggle('light-theme');
+            const isLight = body.classList.contains('light-theme');
+            
+            themeIcon.setAttribute('name', isLight ? 'sunny' : 'moon');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        });
+    </script>
+</body>
+</html>
