@@ -37,10 +37,12 @@ mobileweb/
 │   ├── lab08_ai
 │   ├── lab09_sensors
 │   └── index.html         # หน้าเว็บรวมผลงานทั้งหมด
-|
-├── node_modules/          # โฟลเดอร์สำหรับเก็บ Node Modules
 │
+├── .gitignore
+├── README.md
+├── npm
+├── package-lock.json
 ├── package.json
-├── pnpm-workspace.yaml
-└── README.md
+├── pnpm-lock.yaml
+└── pnpm-workspace.yaml
 ```
